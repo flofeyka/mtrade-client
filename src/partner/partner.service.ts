@@ -50,6 +50,19 @@ export class PartnerService {
       };
     }
 
+    // Date filtering
+    if (dto.dateFrom || dto.dateTo) {
+      where.createdAt = {};
+
+      if (dto.dateFrom) {
+        where.createdAt.gte = new Date(dto.dateFrom);
+      }
+
+      if (dto.dateTo) {
+        where.createdAt.lte = new Date(dto.dateTo);
+      }
+    }
+
     const partners = await this.prisma.partner.findMany({
       orderBy: {
         createdAt: 'desc',

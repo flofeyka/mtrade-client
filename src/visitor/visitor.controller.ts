@@ -20,6 +20,7 @@ import {
 import { VisitorService } from './visitor.service';
 import { CreateVisitorDto } from './dto/create-visitor.dto';
 import { UpdateVisitorDto } from './dto/update-visitor.dto';
+import { FindVisitorsDto } from './dto/find-visitors.dto';
 import { VisitorRdo, VisitorListRdo } from './rdo/visitor.rdo';
 
 @ApiTags('visitors')
@@ -40,20 +41,31 @@ export class VisitorController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all visitors with pagination and filters' })
+  @ApiOperation({
+    summary: 'Get all visitors with pagination, filters and search',
+    description:
+      'Retrieves a list of all visitors with optional search, date filtering and other filters, ordered by creation date (newest first)',
+  })
   @ApiQuery({
     name: 'page',
     required: false,
-    type: Number,
-    description: 'Page number (default: 1)',
-    example: 1,
+    type: String,
+    description: 'Page number',
+    example: '1',
   })
   @ApiQuery({
     name: 'limit',
     required: false,
-    type: Number,
-    description: 'Number of items per page (default: 10)',
-    example: 10,
+    type: String,
+    description: 'Number of items per page',
+    example: '10',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description: 'Search in traffic source, country, device, or browser',
+    example: 'Google',
   })
   @ApiQuery({
     name: 'country',
@@ -81,29 +93,29 @@ export class VisitorController {
     required: false,
     type: String,
     description: 'Filter by traffic source',
-    example: 'Google',
+    example: 'Google Ads',
+  })
+  @ApiQuery({
+    name: 'dateFrom',
+    required: false,
+    type: String,
+    description: 'Filter from date (ISO string)',
+    example: '2024-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'dateTo',
+    required: false,
+    type: String,
+    description: 'Filter to date (ISO string)',
+    example: '2024-01-31T23:59:59.999Z',
   })
   @ApiResponse({
     status: 200,
     description: 'List of visitors retrieved successfully.',
     type: VisitorListRdo,
   })
-  findAll(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query('country') country?: string,
-    @Query('device') device?: string,
-    @Query('browser') browser?: string,
-    @Query('trafficSource') trafficSource?: string,
-  ): Promise<VisitorListRdo> {
-    return this.visitorService.findAll(
-      page,
-      limit,
-      country,
-      device,
-      browser,
-      trafficSource,
-    );
+  findAll(@Query() dto: FindVisitorsDto): Promise<VisitorListRdo> {
+    return this.visitorService.findAll(dto);
   }
 
   @Get('stats/country')

@@ -1,12 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RequestStatus } from '@prisma/client';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
-export class FindRequestsDto {
+export class FindVisitorsDto {
   @ApiProperty({
     title: 'Search parameter',
-    description: 'Searches by full name, email, phone, or telegram',
-    example: 'Иван Иванов',
+    description: 'Searches by traffic source, country, device, or browser',
+    example: 'Google',
   })
   @IsOptional()
   @IsString()
@@ -24,29 +23,47 @@ export class FindRequestsDto {
   @ApiProperty({
     title: 'Page size parameter',
     description: 'Items per page',
-    example: 15,
+    example: 10,
   })
   @IsOptional()
   @IsString()
-  limit?: string = '15';
+  limit?: string = '10';
 
   @ApiProperty({
-    title: 'Request status parameter',
-    description: 'Request status parameter',
-    example: RequestStatus.APPROVED,
-  })
-  @IsOptional()
-  @IsEnum(RequestStatus)
-  status?: RequestStatus;
-
-  @ApiProperty({
-    title: 'Source parameter',
-    description: 'Source the traffic',
-    example: 'Google ads',
+    title: 'Country parameter',
+    description: 'Filter by country',
+    example: 'Russia',
   })
   @IsOptional()
   @IsString()
-  source?: string;
+  country?: string;
+
+  @ApiProperty({
+    title: 'Device parameter',
+    description: 'Filter by device',
+    example: 'Desktop',
+  })
+  @IsOptional()
+  @IsString()
+  device?: string;
+
+  @ApiProperty({
+    title: 'Browser parameter',
+    description: 'Filter by browser',
+    example: 'Chrome',
+  })
+  @IsOptional()
+  @IsString()
+  browser?: string;
+
+  @ApiProperty({
+    title: 'Traffic source parameter',
+    description: 'Filter by traffic source',
+    example: 'Google Ads',
+  })
+  @IsOptional()
+  @IsString()
+  trafficSource?: string;
 
   @ApiProperty({
     title: 'Date from parameter',

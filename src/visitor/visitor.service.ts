@@ -2,8 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateVisitorDto } from './dto/create-visitor.dto';
 import { UpdateVisitorDto } from './dto/update-visitor.dto';
+import { FindVisitorsDto } from './dto/find-visitors.dto';
 import { VisitorRdo, VisitorListRdo } from './rdo/visitor.rdo';
 import { plainToInstance } from 'class-transformer';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class VisitorService {
@@ -17,38 +19,75 @@ export class VisitorService {
     return plainToInstance(VisitorRdo, visitor);
   }
 
-  async findAll(
-    page: number = 1,
-    limit: number = 10,
-    country?: string,
-    device?: string,
-    browser?: string,
-    trafficSource?: string,
-  ): Promise<VisitorListRdo> {
+  async findAll(dto: FindVisitorsDto): Promise<VisitorListRdo> {
+    const page = parseInt(dto.page || '1');
+    const limit = parseInt(dto.limit || '10');
     const skip = (page - 1) * limit;
 
-    const where: any = {};
-    if (country) {
+    const where: Prisma.VisitorWhereInput = {};
+
+    if (dto.search) {
+      where.OR = [
+        {
+          trafficSource: {
+            contains: dto.search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          country: {
+            contains: dto.search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          device: {
+            contains: dto.search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          browser: {
+            contains: dto.search,
+            mode: 'insensitive',
+          },
+        },
+      ];
+    }
+
+    // Date filtering
+    if (dto.dateFrom || dto.dateTo) {
+      where.createdAt = {};
+      if (dto.dateFrom) {
+        where.createdAt.gte = new Date(dto.dateFrom);
+      }
+      if (dto.dateTo) {
+        where.createdAt.lte = new Date(dto.dateTo);
+      }
+    }
+
+    // Specific filters
+    if (dto.country) {
       where.country = {
-        contains: country,
+        contains: dto.country,
         mode: 'insensitive',
       };
     }
-    if (device) {
+    if (dto.device) {
       where.device = {
-        contains: device,
+        contains: dto.device,
         mode: 'insensitive',
       };
     }
-    if (browser) {
+    if (dto.browser) {
       where.browser = {
-        contains: browser,
+        contains: dto.browser,
         mode: 'insensitive',
       };
     }
-    if (trafficSource) {
+    if (dto.trafficSource) {
       where.trafficSource = {
-        contains: trafficSource,
+        contains: dto.trafficSource,
         mode: 'insensitive',
       };
     }

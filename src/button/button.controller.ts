@@ -21,6 +21,7 @@ import {
 import { ButtonService } from './button.service';
 import { CreateButtonDto } from './dto/create-button.dto';
 import { UpdateButtonDto } from './dto/update-button.dto';
+import { FindButtonsDto } from './dto/find-buttons.dto';
 import { ButtonRdo } from './rdo/button.rdo';
 import { ButtonListRdo } from './rdo/button-list.rdo';
 
@@ -42,7 +43,7 @@ export class ButtonController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all buttons with pagination' })
+  @ApiOperation({ summary: 'Get all buttons with pagination and filtering' })
   @ApiQuery({
     name: 'page',
     required: false,
@@ -55,17 +56,25 @@ export class ButtonController {
     description: 'Number of items per page',
     example: 10,
   })
+  @ApiQuery({
+    name: 'dateFrom',
+    description: 'Start date for filtering buttons (ISO 8601 format)',
+    required: false,
+    example: '2024-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'dateTo',
+    description: 'End date for filtering buttons (ISO 8601 format)',
+    required: false,
+    example: '2024-12-31T23:59:59.999Z',
+  })
   @ApiResponse({
     status: 200,
     description: 'List of buttons retrieved successfully',
     type: ButtonListRdo,
   })
-  findAll(
-    @Query('page', new ParseIntPipe({ optional: true })) page: number = 1,
-    @Query('pageSize', new ParseIntPipe({ optional: true }))
-    pageSize: number = 10,
-  ): Promise<ButtonListRdo> {
-    return this.buttonService.findAll(page, pageSize);
+  findAll(@Query() dto: FindButtonsDto): Promise<ButtonListRdo> {
+    return this.buttonService.findAll(dto);
   }
 
   @Get(':id')

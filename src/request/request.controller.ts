@@ -56,40 +56,65 @@ export class RequestController {
 
   @Get()
   @ApiOperation({
-    summary: 'Get all requests with pagination',
+    summary: 'Get all requests with pagination, filters and search',
     description:
-      'Retrieves a paginated list of all requests with optional filtering by status and source',
+      'Retrieves a paginated list of all requests with optional filtering by status, source, date range and search by name/telegram',
   })
   @ApiQuery({
     name: 'page',
     required: false,
-    description: 'Page number (default: 1)',
-    example: 1,
+    type: String,
+    description: 'Page number',
+    example: '1',
   })
   @ApiQuery({
     name: 'limit',
     required: false,
-    description: 'Number of items per page (default: 10)',
-    example: 10,
+    type: String,
+    description: 'Number of items per page',
+    example: '15',
   })
   @ApiQuery({
     name: 'status',
     required: false,
+    enum: ['PENDING', 'APPROVED', 'REJECTED', 'IN_PROGRESS'],
     description: 'Filter by request status',
     example: 'PENDING',
   })
   @ApiQuery({
     name: 'source',
     required: false,
-    description: 'Filter by request source',
-    example: 'Website',
+    type: String,
+    description: 'Filter by source',
+    example: 'Google ads',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description: 'Search in full name, email, phone, or telegram',
+    example: 'Иван Иванов',
+  })
+  @ApiQuery({
+    name: 'dateFrom',
+    required: false,
+    type: String,
+    description: 'Filter from date (ISO string)',
+    example: '2024-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'dateTo',
+    required: false,
+    type: String,
+    description: 'Filter to date (ISO string)',
+    example: '2024-01-31T23:59:59.999Z',
   })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Paginated list of requests',
     type: RequestListRdo,
   })
-  async findAll(dto: FindRequestsDto): Promise<RequestListRdo> {
+  async findAll(@Query() dto: FindRequestsDto): Promise<RequestListRdo> {
     return this.requestService.findAll(dto);
   }
 

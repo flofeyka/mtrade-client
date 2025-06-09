@@ -96,4 +96,25 @@ export class RequestListRdo {
     example: 42,
   })
   total: number;
+
+  @Expose()
+  @ApiProperty({
+    description: 'Current page number',
+    example: 1,
+  })
+  page: number;
+
+  @Expose()
+  @ApiProperty({
+    description: 'Number of items per page',
+    example: 15,
+  })
+  limit: number;
+
+  @Expose()
+  @ApiProperty({
+    description: 'Total number of pages',
+    example: 3,
+  })
+  totalPages: number;
 }

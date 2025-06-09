@@ -2,9 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateButtonDto } from './dto/create-button.dto';
 import { UpdateButtonDto } from './dto/update-button.dto';
+import { FindButtonsDto } from './dto/find-buttons.dto';
 import { plainToInstance } from 'class-transformer';
 import { ButtonRdo } from './rdo/button.rdo';
 import { ButtonListRdo } from './rdo/button-list.rdo';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ButtonService {
@@ -20,20 +22,35 @@ export class ButtonService {
     });
   }
 
-  async findAll(
-    page: number = 1,
-    pageSize: number = 10,
-  ): Promise<ButtonListRdo> {
+  async findAll(dto: FindButtonsDto): Promise<ButtonListRdo> {
+    const page = Number(dto.page) || 1;
+    const pageSize = Number(dto.pageSize) || 10;
     const skip = (page - 1) * pageSize;
     const take = pageSize;
 
+    const where: Prisma.ButtonWhereInput = {};
+
+    // Date filtering
+    if (dto.dateFrom || dto.dateTo) {
+      where.createdAt = {};
+
+      if (dto.dateFrom) {
+        where.createdAt.gte = new Date(dto.dateFrom);
+      }
+
+      if (dto.dateTo) {
+        where.createdAt.lte = new Date(dto.dateTo);
+      }
+    }
+
     const [buttons, total] = await Promise.all([
       this.prisma.button.findMany({
+        where,
         skip,
         take,
         orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.button.count(),
+      this.prisma.button.count({ where }),
     ]);
 
     const totalPages = Math.ceil(total / pageSize);

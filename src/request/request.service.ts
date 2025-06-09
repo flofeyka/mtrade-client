@@ -34,10 +34,42 @@ export class RequestService {
       };
     }
 
+    if (dto?.dateFrom || dto?.dateTo) {
+      where.createdAt = {};
+      if (dto.dateFrom) {
+        where.createdAt.gte = new Date(dto.dateFrom);
+      }
+      if (dto.dateTo) {
+        where.createdAt.lte = new Date(dto.dateTo);
+      }
+    }
+
     if (dto?.search) {
       where.OR = [
-        { fullName: { contains: dto.search.toLowerCase() } },
-        { telegram: { contains: dto.search.toLowerCase() } },
+        {
+          fullName: {
+            contains: dto.search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          telegram: {
+            contains: dto.search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          email: {
+            contains: dto.search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          phone: {
+            contains: dto.search,
+            mode: 'insensitive',
+          },
+        },
       ];
     }
 
@@ -56,6 +88,9 @@ export class RequestService {
     return plainToInstance(RequestListRdo, {
       requests,
       total,
+      page: Number(dto?.page || 1),
+      limit: Number(dto?.limit || 15),
+      totalPages: Math.ceil(total / Number(dto?.limit || 15)),
     });
   }
 

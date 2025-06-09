@@ -68,6 +68,24 @@ export class PartnerController {
     description:
       'Retrieves a list of all partners ordered by creation date (newest first)',
   })
+  @ApiQuery({
+    name: 'search',
+    description: 'Search partners by username',
+    required: false,
+    example: 'supalonely',
+  })
+  @ApiQuery({
+    name: 'dateFrom',
+    description: 'Start date for filtering partners (ISO 8601 format)',
+    required: false,
+    example: '2024-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'dateTo',
+    description: 'End date for filtering partners (ISO 8601 format)',
+    required: false,
+    example: '2024-12-31T23:59:59.999Z',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'List of all partners with total count',
