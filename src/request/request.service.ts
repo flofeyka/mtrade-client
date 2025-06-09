@@ -20,21 +20,21 @@ export class RequestService {
   }
 
   async findAll(dto: FindRequestsDto): Promise<RequestListRdo> {
-    const skip = (Number(dto.page || 1) - 1) * Number(dto.limit || 15);
+    const skip = (Number(dto?.page || 1) - 1) * Number(dto?.limit || 15);
 
     const where: Prisma.RequestWhereInput = {};
 
-    if (dto.status) {
+    if (dto?.status) {
       where.status = dto.status;
     }
-    if (dto.source) {
+    if (dto?.source) {
       where.source = {
         contains: dto.source,
         mode: 'insensitive',
       };
     }
 
-    if (dto.search) {
+    if (dto?.search) {
       where.OR = [
         { fullName: { contains: dto.search.toLowerCase() } },
         { telegram: { contains: dto.search.toLowerCase() } },
@@ -45,7 +45,7 @@ export class RequestService {
       this.prisma.request.findMany({
         where,
         skip,
-        take: +(dto.limit || 15),
+        take: +(dto?.limit || 15),
         orderBy: {
           createdAt: 'desc',
         },
