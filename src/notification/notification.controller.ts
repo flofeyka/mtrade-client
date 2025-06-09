@@ -16,6 +16,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
@@ -57,7 +58,28 @@ export class NotificationController {
   @ApiOperation({
     summary: 'Get all notifications',
     description:
-      'Retrieves a list of all notifications ordered by creation date (newest first)',
+      'Retrieves a list of all notifications with optional search and date filtering, ordered by creation date (newest first)',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description: 'Search in notification text',
+    example: 'Host',
+  })
+  @ApiQuery({
+    name: 'dateFrom',
+    required: false,
+    type: String,
+    description: 'Filter from date (ISO string)',
+    example: '2024-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'dateTo',
+    required: false,
+    type: String,
+    description: 'Filter to date (ISO string)',
+    example: '2024-01-31T23:59:59.999Z',
   })
   @ApiResponse({
     status: HttpStatus.OK,

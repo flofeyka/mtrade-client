@@ -30,11 +30,23 @@ export class NotificationService {
 
     if (dto.search) {
       where.text = {
-        contains: dto.search.toLowerCase(),
+        contains: dto.search,
+        mode: 'insensitive',
       };
     }
 
+    if (dto.dateFrom || dto.dateTo) {
+      where.createdAt = {};
+      if (dto.dateFrom) {
+        where.createdAt.gte = new Date(dto.dateFrom);
+      }
+      if (dto.dateTo) {
+        where.createdAt.lte = new Date(dto.dateTo);
+      }
+    }
+
     const notifications = await this.prisma.notification.findMany({
+      where,
       orderBy: {
         createdAt: 'desc',
       },

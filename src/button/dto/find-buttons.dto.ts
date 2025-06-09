@@ -1,15 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, IsISO8601 } from 'class-validator';
 
-export class FindPartnersDto {
+export class FindButtonsDto {
   @ApiProperty({
-    title: 'Find parameter',
-    description: 'Searches by username',
-    example: 'supalonely',
+    title: 'Page parameter',
+    description: 'Page number',
+    example: 1,
   })
   @IsOptional()
   @IsString()
-  search?: string;
+  page?: string = '1';
+
+  @ApiProperty({
+    title: 'Page size parameter',
+    description: 'Items per page',
+    example: 10,
+  })
+  @IsOptional()
+  @IsString()
+  pageSize?: string = '10';
 
   @ApiProperty({
     description: 'Start date for filtering (ISO 8601 format)',
