@@ -24,9 +24,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY yarn*.lock ./
 
-RUN yarn prisma generate
-RUN yarn prisma migrate deploy
-
 RUN yarn install --production
 
 COPY . .
