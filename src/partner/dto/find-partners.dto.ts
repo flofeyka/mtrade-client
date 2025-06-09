@@ -1,6 +1,5 @@
-import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class FindPartnersDto {
   @ApiProperty({
@@ -8,7 +7,7 @@ export class FindPartnersDto {
     description: 'Searches by username',
     example: 'supalonely',
   })
-  @Optional()
+  @IsOptional()
   @IsString()
   search?: string;
 }
