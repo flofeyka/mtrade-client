@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsISO8601 } from 'class-validator';
+import { IsOptional, IsString, IsISO8601, IsBoolean } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class FindButtonsDto {
   @ApiProperty({
@@ -37,4 +38,14 @@ export class FindButtonsDto {
   @IsOptional()
   @IsISO8601()
   dateTo?: string;
+
+  @ApiProperty({
+    description: 'Filter by updated date instead of created date',
+    example: 'true',
+    required: false,
+  })
+  @IsOptional()
+  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  filterByUpdated?: boolean;
 }

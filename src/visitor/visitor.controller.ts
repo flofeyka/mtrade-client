@@ -247,7 +247,7 @@ export class VisitorController {
   })
   @ApiResponse({ status: 404, description: 'Visitor not found.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateVisitorDto: UpdateVisitorDto,
   ): Promise<VisitorRdo> {
