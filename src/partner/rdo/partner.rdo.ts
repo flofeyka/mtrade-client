@@ -63,6 +63,34 @@ export class PartnerRdo {
     format: 'date-time',
   })
   createdAt: Date;
+
+  @Expose()
+  @ApiProperty({
+    description: 'Number of requests linked to this partner',
+    example: 5,
+    required: false,
+  })
+  requestsCount?: number;
+
+  @Expose()
+  @ApiProperty({
+    description: 'Recent requests for this partner',
+    example: [
+      {
+        id: 1,
+        fullName: 'John Doe',
+        email: 'john@example.com',
+        createdAt: '2024-01-01T00:00:00.000Z',
+      },
+    ],
+    required: false,
+  })
+  recentRequests?: Array<{
+    id: number;
+    fullName: string;
+    email: string;
+    createdAt: Date;
+  }>;
 }
 
 export class PartnerListRdo {

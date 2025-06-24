@@ -70,9 +70,42 @@ export class PartnerService {
       where,
     });
 
+    // Для каждого партнера получаем количество заявок и последние заявки
+    const partnersWithRequests = await Promise.all(
+      partners.map(async (partner) => {
+        const requestsCount = await this.prisma.request.count({
+          where: {
+            partnerCode: partner.code,
+          },
+        });
+
+        const recentRequests = await this.prisma.request.findMany({
+          where: {
+            partnerCode: partner.code,
+          },
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 3,
+        });
+
+        return {
+          ...partner,
+          requestsCount,
+          recentRequests,
+        };
+      }),
+    );
+
     return {
-      partners: transformToArrayRdo(PartnerRdo, partners),
-      total: partners.length,
+      partners: transformToArrayRdo(PartnerRdo, partnersWithRequests),
+      total: partnersWithRequests.length,
     };
   }
 

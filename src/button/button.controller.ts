@@ -68,6 +68,12 @@ export class ButtonController {
     required: false,
     example: '2024-12-31T23:59:59.999Z',
   })
+  @ApiQuery({
+    name: 'filterByUpdated',
+    description: 'Filter by updated date instead of created date',
+    required: false,
+    example: 'true',
+  })
   @ApiResponse({
     status: 200,
     description: 'List of buttons retrieved successfully',
@@ -130,13 +136,46 @@ export class ButtonController {
     return this.buttonService.incrementClickCount(id);
   }
 
+  @Post('track-click')
+  @ApiOperation({
+    summary:
+      'Track button click (create button if not exists and increment click count)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Button click tracked successfully',
+    type: ButtonRdo,
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  trackClick(
+    @Body() trackClickDto: { name: string; type?: string; url?: string },
+  ): Promise<ButtonRdo> {
+    return this.buttonService.trackClick(
+      trackClickDto.name,
+      trackClickDto.type,
+      trackClickDto.url,
+    );
+  }
+
   @Get('stats/clicks')
   @ApiOperation({ summary: 'Get button click statistics by type' })
+  @ApiQuery({
+    name: 'dateFrom',
+    description: 'Start date for filtering buttons (ISO 8601 format)',
+    required: false,
+    example: '2024-01-01T00:00:00.000Z',
+  })
+  @ApiQuery({
+    name: 'dateTo',
+    description: 'End date for filtering buttons (ISO 8601 format)',
+    required: false,
+    example: '2024-12-31T23:59:59.999Z',
+  })
   @ApiResponse({
     status: 200,
     description: 'Click statistics retrieved successfully',
   })
-  getClickStats() {
-    return this.buttonService.getClickStats();
+  getClickStats(@Query() dto: { dateFrom?: string; dateTo?: string }) {
+    return this.buttonService.getClickStats(dto.dateFrom, dto.dateTo);
   }
 }

@@ -4,12 +4,6 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-enum SubscriptionType {
-  MINI_GOLDI
-  GOLDI
-  DEMO
-}
-
 enum RequisiteType {
   Card
   Yoomoney
@@ -25,11 +19,6 @@ enum RequestStatus {
   APPROVED
   REJECTED
   IN_PROGRESS
-}
-
-enum PaymentStatus {
-  PENDING
-  COMPLETED
 }
 
 generator client {
@@ -57,22 +46,6 @@ model Visitor {
   @@map("visitors")
 }
 
-model User {
-  id           Int           @id @default(autoincrement())
-  partnerId    Int?
-  partner      Partner?      @relation(fields: [partnerId], references: [id])
-  firstName    String
-  lastName     String?
-  middleName   String?
-  username     String
-  phone        String
-  email        String
-  subscription Subscription?
-  account      String
-
-  @@map("users")
-}
-
 model Partner {
   id            Int                @id @default(autoincrement())
   name          String
@@ -81,7 +54,6 @@ model Partner {
   requisiteType RequisiteType
   bonusStatus   PartnerBonusStatus
   code          String
-  users         User[]
 
   createdAt DateTime @default(now())
 
@@ -107,15 +79,6 @@ model Admin {
   @@map("admins")
 }
 
-model Subscription {
-  id     String           @id @default(uuid())
-  type   SubscriptionType
-  userId Int              @unique
-  user   User             @relation(fields: [userId], references: [id])
-
-  @@map("subscriptions")
-}
-
 model Request {
   id          Int           @id @default(autoincrement())
   fullName    String
@@ -129,39 +92,6 @@ model Request {
   updatedAt   DateTime      @updatedAt
 
   @@map("requests")
-}
-
-model PromoCode {
-  id              Int       @id @default(autoincrement())
-  code            String    @unique
-  discountPercent Int?
-  discountAmount  Int?
-  isActive        Boolean   @default(true)
-  usageLimit      Int?
-  usageCount      Int       @default(0)
-  expiresAt       DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  payments Payment[]
-
-  @@map("promo_codes")
-}
-
-model Payment {
-  id          Int           @id @default(autoincrement())
-  fullName    String
-  email       String
-  source      String
-  product     String
-  amount      Int // amount in kopecks
-  promoCodeId Int?
-  promoCode   PromoCode?    @relation(fields: [promoCodeId], references: [id])
-  status      PaymentStatus @default(PENDING)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  @@map("payments")
 }
 
 model Button {

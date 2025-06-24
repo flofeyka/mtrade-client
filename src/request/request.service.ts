@@ -5,16 +5,38 @@ import { UpdateRequestDto } from './dto/update-request.dto';
 import { RequestRdo, RequestListRdo } from './rdo/request.rdo';
 import { plainToInstance } from 'class-transformer';
 import { FindRequestsDto } from './dto/find-requests.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma, PartnerBonusStatus } from '@prisma/client';
+import { PartnerService } from '../partner/partner.service';
 
 @Injectable()
 export class RequestService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly partnerService: PartnerService,
+  ) {}
 
   async create(dto: CreateRequestDto): Promise<RequestRdo> {
     const request = await this.prisma.request.create({
       data: dto,
     });
+
+    // Если указан партнерский код, обновляем статус бонуса партнера на PENDING
+    if (dto.partnerCode) {
+      try {
+        const partner = await this.partnerService.findByCode(dto.partnerCode);
+        if (partner) {
+          await this.partnerService.update(partner.id, {
+            bonusStatus: PartnerBonusStatus.PENDING,
+          });
+        }
+      } catch (error) {
+        // Логируем ошибку, но не прерываем создание заявки
+        console.warn(
+          `Failed to update partner bonus status for code ${dto.partnerCode}:`,
+          error,
+        );
+      }
+    }
 
     return plainToInstance(RequestRdo, request);
   }
